@@ -7,14 +7,16 @@ output: html_document
 
 Load the data and convert date strings to a date format:
 
-```{r readData}
+
+```r
 data <- read.csv("activity.csv",
                  colClasses = c("numeric", "character", "numeric") )
 ```
 
 Calculate mean of total daily steps and create histogram:
 
-```{r dailySteps}
+
+```r
 dailySteps <- tapply(data$steps, data$date, sum, na.rm=TRUE)
 dailyMean <- mean(dailySteps, na.rm=TRUE)
 dailyMed <- median(dailySteps, na.rm=TRUE)
@@ -24,9 +26,12 @@ hist(dailySteps,
                " median =", dailyMed))
 ```
 
+![plot of chunk dailySteps](figure/dailySteps-1.png) 
+
 Calculate and plot mean steps across all days, by interval
 
-```{r intervalMean}
+
+```r
 intMean <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
 maxInt <- names(which.max(intMean))
 maxSteps <- round(max(intMean), digits=0)
@@ -37,20 +42,26 @@ plot(as.numeric(names(intMean)),
      sub=paste(maxSteps, "max steps at interval", maxInt),
      xlab="Time Interval",
      ylab="Daily Average Steps" )
-
-
 ```
+
+![plot of chunk intervalMean](figure/intervalMean-1.png) 
 
 Calculate and print number of NAs:
 
-```{r numNAs}
+
+```r
 NAs <- is.na(data$steps)
 print(paste("Number of time intervals with NAs is", sum(NAs) ) )
 ```
 
+```
+## [1] "Number of time intervals with NAs is 2304"
+```
+
 Now we replace missing data with the mean for that interval and plot histogram:
 
-```{r imputeMissing, fig.height=10}
+
+```r
 #Create new data table
 newData <- data
 
@@ -69,17 +80,21 @@ hist(newDailySteps,
      main="Histogram of Daily Total Steps (NA's set to interval mean)",
      sub=paste("mean =", round(newDailyMean, digits=1), 
                " median =", round(newDailyMed, digits=1) ) )
-
-meanDiff <- round( abs(dailyMean - newDailyMean), digits=1 )
-medDiff <- round( abs(dailyMed - newDailyMed), digits=1 ) 
-
 ```
 
-Note that the mean and median change when we impute missing values.  The absolute difference in the mean is **`r meanDiff` steps** and the absolute difference in the median is **`r medDiff` steps**.  
+![plot of chunk imputeMissing](figure/imputeMissing-1.png) 
+
+```r
+meanDiff <- round( abs(dailyMean - newDailyMean), digits=1 )
+medDiff <- round( abs(dailyMed - newDailyMed), digits=1 ) 
+```
+
+Note that the mean and median change when we impute missing values.  The absolute difference in the mean is **1412 steps** and the absolute difference in the median is **371.2 steps**.  
 
 Finally, plot daily averages for Weekday vs Weekend:
 
-```{r weekdayAnalysis}
+
+```r
 #Convert strings to dates
 newData$day <- weekdays(as.Date(newData$date, "%Y-%m-%d"))
 
@@ -113,3 +128,5 @@ plot(as.numeric(names(intMean)),
      xlab="Time Interval",
      ylab="Daily Average Steps" )
 ```
+
+![plot of chunk weekdayAnalysis](figure/weekdayAnalysis-1.png) 
